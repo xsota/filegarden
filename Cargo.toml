@@ -1,6 +1,6 @@
 [package]
 name = "filegarden"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.84"
 description = "Watch your code grow — a real-time file activity visualizer for the terminal"
