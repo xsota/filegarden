@@ -180,8 +180,7 @@ impl App {
                 } else {
                     let fx = &mut self.state.fx;
                     fx.enabled = !fx.enabled;
-                    let msg =
-                        if fx.enabled { "game mode ON — make some changes!" } else { "game mode off" };
+                    let msg = if fx.enabled { "mode: game — make some changes!" } else { "mode: calm" };
                     self.state.notify(msg.into(), now);
                 }
             }
@@ -257,14 +256,15 @@ pub fn root_label(root: &Path) -> String {
     s.strip_prefix(r"\\?\").map(str::to_string).unwrap_or(s)
 }
 
-pub fn run(source: Source, theme: Theme, fx: bool) -> Result<()> {
+/// `game` starts in game mode instead of the calm default.
+pub fn run(source: Source, theme: Theme, game: bool) -> Result<()> {
     let (tx, rx) = mpsc::channel::<AppEvent>();
     let (label, demo) = match &source {
         Source::Watch(cfg) => (root_label(&cfg.root), false),
         Source::Demo { .. } => ("demo: simulated agent session".to_string(), true),
     };
     let mut app = App::new(theme, label, demo);
-    app.state.fx.enabled = fx && theme.animate;
+    app.state.fx.enabled = game && theme.animate;
 
     // Start watching before the terminal switches modes, so errors print normally.
     let sink_tx = tx.clone();

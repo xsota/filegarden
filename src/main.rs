@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 
 use filegarden::app::{self, Source};
-use filegarden::cli::{Cli, ColorChoice, Command, DisplayArgs, WatchArgs};
+use filegarden::cli::{Cli, ColorChoice, Command, DisplayArgs, Mode, WatchArgs};
 use filegarden::ui::theme::{ColorMode, Theme};
 use filegarden::watcher::filter::Filter;
 use filegarden::watcher::WatchConfig;
@@ -45,5 +45,5 @@ fn main() -> Result<()> {
         Some(Command::Watch(w)) => (Source::Watch(watch_config(&w)?), w.display),
         None => (Source::Watch(watch_config(&cli.watch)?), cli.watch.display),
     };
-    app::run(source, theme(&display), display.fx)
+    app::run(source, theme(&display), display.mode == Mode::Game)
 }

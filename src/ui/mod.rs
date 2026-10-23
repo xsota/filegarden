@@ -348,7 +348,7 @@ pub const KEYS: &[(&str, &str)] = &[
     ("Space", "pause / resume display"),
     ("r", "rescan directory"),
     ("a", "all files / active files only"),
-    ("x", "game mode: particles, combos, score"),
+    ("x", "switch calm / game mode"),
     ("?", "this help"),
 ];
 

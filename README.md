@@ -15,8 +15,8 @@ lights up when it changes.
 - **Read-only.** It reads directory listings and file metadata only. It never opens file
   contents, never writes, and never touches the network.
 - **Light.** A single static binary. ~0% CPU when idle, about 13 MB of memory for 10,000 files.
-- **Game mode** (`--fx` or `x`): particles, floating points, combos, levels and achievements
-  for when calm isn't the point.
+- **Two modes.** The default *calm* mode is made for leaving open next to your work. *Game*
+  mode (`--mode game`, or `x`) adds particles, floating points, combos, levels and achievements.
 
 ## Install
 
@@ -54,7 +54,8 @@ filegarden watch . --exclude "*.log" --exclude tmp/
 filegarden watch . --poll     # network drives, WSL /mnt/*, some containers
 filegarden watch . --no-animation
 filegarden demo               # simulated AI-agent session; touches no files
-filegarden demo --fx          # ...as a game
+filegarden watch . --mode game  # game mode
+filegarden demo --mode game   # ...the demo as a game
 ```
 
 The screen has four parts:
@@ -78,7 +79,7 @@ compact counters.
 
 ### Game mode
 
-Press `x` (or start with `--fx`) to turn your agent's work into an arcade game:
+Start with `--mode game` (or press `x` at any time) to turn your agent's work into an arcade game:
 
 ![FileGarden game mode: combos, FEVER, level ups and achievements](docs/fx.gif)
 
@@ -91,8 +92,8 @@ Press `x` (or start with `--fx`) to turn your agent's work into an arcade game:
 - levels, LEVEL UP fireworks, screen shake on big bursts and directory deletions, and
   achievement toasts (Seedling, Reaper, Demolition, Marathon, ...).
 
-Score, level and combo are shown in the header. Game mode is off by default and unavailable with
-`--no-animation`.
+Score, level and combo are shown in the header. `x` switches between calm and game mode while
+running. Game mode is unavailable with `--no-animation`.
 
 ### Keys
 
@@ -108,7 +109,7 @@ Score, level and combo are shown in the header. Game mode is off by default and 
 | `Space`               | Pause / resume the display              |
 | `r`                   | Rescan the directory                    |
 | `a`                   | All files / only files that changed     |
-| `x`                   | Game mode on / off                      |
+| `x`                   | Switch calm / game mode                 |
 | `?`                   | Help                                    |
 
 Pausing freezes the picture, including fades. Changes keep being recorded and appear when you
@@ -125,7 +126,7 @@ filegarden [watch] [PATH] [OPTIONS]
       --poll-interval <MS>   Polling interval [default: 1000]
       --debounce <MS>        Event aggregation window [default: 100]
       --resync <SECS>        Full re-synchronisation interval, 0 disables [default: 60]
-      --fx                   Game mode: particles, combos, score (toggle with x)
+      --mode <MODE>          calm | game [default: calm]
       --no-animation         No fades: changes stay highlighted for 3 s, then switch off
       --no-color             No colors (NO_COLOR is honored too)
       --ascii                ASCII symbols only

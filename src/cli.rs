@@ -92,10 +92,6 @@ pub struct DisplayArgs {
     #[arg(long)]
     pub no_color: bool,
 
-    /// Game mode: particles, combos, score and achievements (toggle with `x`)
-    #[arg(long)]
-    pub fx: bool,
-
     /// Use ASCII instead of Unicode symbols
     #[arg(long)]
     pub ascii: bool,
@@ -103,6 +99,17 @@ pub struct DisplayArgs {
     /// Color depth
     #[arg(long, value_enum, default_value_t = ColorChoice::Auto)]
     pub colors: ColorChoice,
+
+    /// Display mode: `calm`, or `game` for particles, combos, score and achievements.
+    /// Switch at runtime with `x`
+    #[arg(long, value_enum, default_value_t = Mode::Calm)]
+    pub mode: Mode,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+pub enum Mode {
+    Calm,
+    Game,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
@@ -148,5 +155,15 @@ mod tests {
         let c = Cli::parse_from(["filegarden", "src", "--no-color"]);
         assert_eq!(c.watch.path, PathBuf::from("src"));
         assert!(c.watch.display.no_color);
+        assert_eq!(c.watch.display.mode, Mode::Calm);
+    }
+
+    #[test]
+    fn mode_flag() {
+        let c = Cli::parse_from(["filegarden", "watch", ".", "--mode", "game"]);
+        assert!(matches!(c.command, Some(Command::Watch(w)) if w.display.mode == Mode::Game));
+        let c = Cli::parse_from(["filegarden", "demo", "--mode", "game"]);
+        assert!(matches!(c.command, Some(Command::Demo(d)) if d.display.mode == Mode::Game));
+        assert!(Cli::try_parse_from(["filegarden", "--mode", "loud"]).is_err());
     }
 }
