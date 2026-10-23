@@ -216,7 +216,7 @@ impl App {
                 break;
             }
             let now = Instant::now();
-            if last_draw.map_or(true, |t| now >= t + FRAME) && (dirty || now >= due) {
+            if last_draw.is_none_or(|t| now >= t + FRAME) && (dirty || now >= due) {
                 if !self.paused {
                     let t = self.now();
                     self.state.tick(t);
