@@ -8,7 +8,7 @@ another, and watch the tree come alive: new files glow green, edits flash yellow
 red and fade out, moves shine blue. A defrag-style **Activity Grid** gives every file a block that
 lights up when it changes.
 
-![FileGarden screenshot](docs/screenshot.svg)
+![FileGarden demo: files appear, change and disappear while an AI agent works](docs/demo.gif)
 
 - **No integration needed.** FileGarden watches the file system, so it works with any AI agent,
   editor or tool, with or without Git.
