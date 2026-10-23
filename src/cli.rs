@@ -92,6 +92,10 @@ pub struct DisplayArgs {
     #[arg(long)]
     pub no_color: bool,
 
+    /// Game mode: particles, combos, score and achievements (toggle with `x`)
+    #[arg(long)]
+    pub fx: bool,
+
     /// Use ASCII instead of Unicode symbols
     #[arg(long)]
     pub ascii: bool,

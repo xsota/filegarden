@@ -8,6 +8,7 @@ use std::time::Duration;
 use chrono::Local;
 
 use crate::change::WatchMsg;
+use crate::fx::Fx;
 use crate::viz::Visualization;
 use activity::{Feed, Stats};
 use tree::{FileTree, NodeId};
@@ -26,6 +27,8 @@ pub struct AppState {
     pub feed: Feed,
     pub stats: Stats,
     pub viz: Box<dyn Visualization>,
+    /// Game mode effects; inert unless enabled.
+    pub fx: Fx,
     pub status: SourceStatus,
     /// The most recent change worth scrolling to.
     pub focus: Option<NodeId>,
@@ -41,6 +44,7 @@ impl AppState {
             feed: Feed::new(FEED_CAPACITY),
             stats: Stats::default(),
             viz,
+            fx: Fx::new(false, 0x5eed_f00d),
             status: SourceStatus::Scanning,
             focus: None,
             notice: None,
@@ -71,7 +75,9 @@ impl AppState {
                     self.viz.apply(c, now);
                     self.feed.push(c, now, wall);
                     self.stats.record(c.kind, now);
+                    self.fx.on_change(c, now);
                 }
+                self.fx.on_batch(changes.len(), now);
             }
             WatchMsg::Rescanned { elapsed, errors, changes } => {
                 self.scan_time = Some(elapsed);
@@ -104,6 +110,7 @@ impl AppState {
         self.tree.tick(now);
         self.viz.tick(now);
         self.stats.prune(now);
+        self.fx.update(now);
         if self.notice.as_ref().is_some_and(|(_, at)| now - at > 8.0) {
             self.notice = None;
         }
@@ -111,7 +118,7 @@ impl AppState {
 
     pub fn is_animating(&self, now: f64) -> bool {
         let recent = self.stats.last_event_at.is_some_and(|t| now - t < crate::ui::theme::GLOW + 0.1);
-        recent || self.tree.has_ghosts() || self.viz.is_animating(now)
+        recent || self.tree.has_ghosts() || self.viz.is_animating(now) || self.fx.is_animating(now)
     }
 }
 

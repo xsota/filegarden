@@ -44,6 +44,8 @@ pub struct ActivityGrid {
     /// Re-seed from the tree on the next render.
     needs_seed: bool,
     last_activity: Option<f64>,
+    /// Top-left cell and column count of the last render.
+    origin: Option<(u16, u16, usize)>,
 }
 
 impl ActivityGrid {
@@ -245,6 +247,7 @@ impl Visualization for ActivityGrid {
         let theme = ctx.theme;
         // Center the grid horizontally.
         let x0 = area.x + (area.width - cols as u16 * CELL_WIDTH) / 2;
+        self.origin = Some((x0, area.y, cols));
         for (i, slot) in self.slots.iter().enumerate() {
             let x = x0 + (i % cols) as u16 * CELL_WIDTH;
             let y = area.y + (i / cols) as u16;
@@ -272,6 +275,12 @@ impl Visualization for ActivityGrid {
             };
             buf.set_string(x, y, sym, style);
         }
+    }
+
+    fn locate(&self, path: &Path) -> Option<(u16, u16)> {
+        let (x0, y0, cols) = self.origin?;
+        let i = *self.index.get(path)?;
+        Some((x0 + (i % cols) as u16 * CELL_WIDTH, y0 + (i / cols) as u16))
     }
 
     fn summary(&self) -> String {

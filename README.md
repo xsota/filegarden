@@ -14,7 +14,9 @@ lights up when it changes.
   editor or tool, with or without Git.
 - **Read-only.** It reads directory listings and file metadata only. It never opens file
   contents, never writes, and never touches the network.
-- **Light.** A single static binary. ~0% CPU when idle, a few MB of memory for 10,000 files.
+- **Light.** A single static binary. ~0% CPU when idle, about 13 MB of memory for 10,000 files.
+- **Game mode** (`--fx` or `x`): particles, floating points, combos, levels and achievements
+  for when calm isn't the point.
 
 ## Install
 
@@ -52,6 +54,7 @@ filegarden watch . --exclude "*.log" --exclude tmp/
 filegarden watch . --poll     # network drives, WSL /mnt/*, some containers
 filegarden watch . --no-animation
 filegarden demo               # simulated AI-agent session; touches no files
+filegarden demo --fx          # ...as a game
 ```
 
 The screen has four parts:
@@ -73,6 +76,24 @@ The screen has four parts:
 On small terminals the feed, statistics and grid are dropped in that order; the footer then shows
 compact counters.
 
+### Game mode
+
+Press `x` (or start with `--fx`) to turn your agent's work into an arcade game:
+
+![FileGarden game mode: combos, FEVER, level ups and achievements](docs/fx.gif)
+
+- lit grid cells burst into sparks, and deleted entries **shatter** letter by letter and fall
+  out of the tree;
+- every change scores points (`+100` create, `+25` modify, `+75` delete, `+150` rename, more
+  for directories), floating up from the file that changed;
+- changes less than 2.5 s apart build a **combo** that multiplies points, with NICE! / GREAT! /
+  AWESOME!! / UNSTOPPABLE!!! banners and rainbow **FEVER** borders from 50×;
+- levels, LEVEL UP fireworks, screen shake on big bursts and directory deletions, and
+  achievement toasts (Seedling, Reaper, Demolition, Marathon, ...).
+
+Score, level and combo are shown in the header. Game mode is off by default and unavailable with
+`--no-animation`.
+
 ### Keys
 
 | Key                   | Action                                  |
@@ -87,6 +108,7 @@ compact counters.
 | `Space`               | Pause / resume the display              |
 | `r`                   | Rescan the directory                    |
 | `a`                   | All files / only files that changed     |
+| `x`                   | Game mode on / off                      |
 | `?`                   | Help                                    |
 
 Pausing freezes the picture, including fades. Changes keep being recorded and appear when you
@@ -103,6 +125,7 @@ filegarden [watch] [PATH] [OPTIONS]
       --poll-interval <MS>   Polling interval [default: 1000]
       --debounce <MS>        Event aggregation window [default: 100]
       --resync <SECS>        Full re-synchronisation interval, 0 disables [default: 60]
+      --fx                   Game mode: particles, combos, score (toggle with x)
       --no-animation         No fades: changes stay highlighted for 3 s, then switch off
       --no-color             No colors (NO_COLOR is honored too)
       --ascii                ASCII symbols only
@@ -145,9 +168,9 @@ Measured on Linux (WSL2, ext4), AMD Ryzen 9 3900X, release build, with a generat
 | File change → logical event (60 samples)      | median 100 ms, p95 101 ms, max 101 ms        |
 | Change → on screen                            | ≤ 135 ms (event + at most one 33 ms frame)   |
 | Burst of 5,000 new files                      | written in 345 ms, all delivered by 441 ms   |
-| CPU while idle (20 s, 10,000 files)           | ~0% (below the 10 ms tick resolution)        |
-| CPU under ~180 writes/s for 10 s              | 0.6% of one core                             |
-| Memory (RSS) with 10,000 files                | 4.6 MB                                       |
+| CPU while idle (30 s, 10,000 files)           | ~0.07% (2 scheduler ticks in 30 s)           |
+| CPU under ~190 writes/s for 10 s              | ~5% of one core                              |
+| Memory (RSS) with 10,000 files                | 13 MB                                        |
 
 The event latency is dominated by the 100 ms aggregation window (`--debounce`), which is what
 turns bursts of OS notifications into one change per file. Lower it for snappier updates at the

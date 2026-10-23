@@ -173,6 +173,18 @@ impl App {
                 self.active_only = !self.active_only;
                 self.view.offset = 0;
             }
+            KeyCode::Char('x') => {
+                let now = self.now();
+                if !self.theme.animate {
+                    self.state.notify("game mode needs animations (drop --no-animation)".into(), now);
+                } else {
+                    let fx = &mut self.state.fx;
+                    fx.enabled = !fx.enabled;
+                    let msg =
+                        if fx.enabled { "game mode ON — make some changes!" } else { "game mode off" };
+                    self.state.notify(msg.into(), now);
+                }
+            }
             KeyCode::Char('?') => self.show_help = true,
             _ => {}
         }
@@ -245,13 +257,14 @@ pub fn root_label(root: &Path) -> String {
     s.strip_prefix(r"\\?\").map(str::to_string).unwrap_or(s)
 }
 
-pub fn run(source: Source, theme: Theme) -> Result<()> {
+pub fn run(source: Source, theme: Theme, fx: bool) -> Result<()> {
     let (tx, rx) = mpsc::channel::<AppEvent>();
     let (label, demo) = match &source {
         Source::Watch(cfg) => (root_label(&cfg.root), false),
         Source::Demo { .. } => ("demo: simulated agent session".to_string(), true),
     };
     let mut app = App::new(theme, label, demo);
+    app.state.fx.enabled = fx && theme.animate;
 
     // Start watching before the terminal switches modes, so errors print normally.
     let sink_tx = tx.clone();

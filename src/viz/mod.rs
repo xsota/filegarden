@@ -6,7 +6,7 @@
 
 pub mod grid;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
@@ -32,6 +32,10 @@ pub trait Visualization {
     fn is_animating(&self, now: f64) -> bool;
     /// Draws into `area` (inside the panel border).
     fn render(&mut self, area: Rect, buf: &mut Buffer, ctx: &RenderCtx);
+    /// Screen cell where `path` was drawn in the last frame, for effects.
+    fn locate(&self, _path: &Path) -> Option<(u16, u16)> {
+        None
+    }
     /// A short status for the panel's title bar.
     fn summary(&self) -> String {
         String::new()

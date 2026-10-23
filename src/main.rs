@@ -45,5 +45,5 @@ fn main() -> Result<()> {
         Some(Command::Watch(w)) => (Source::Watch(watch_config(&w)?), w.display),
         None => (Source::Watch(watch_config(&cli.watch)?), cli.watch.display),
     };
-    app::run(source, theme(&display))
+    app::run(source, theme(&display), display.fx)
 }

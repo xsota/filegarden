@@ -12,6 +12,7 @@ pub mod app;
 pub mod change;
 pub mod cli;
 pub mod demo;
+pub mod fx;
 pub mod state;
 pub mod ui;
 pub mod viz;

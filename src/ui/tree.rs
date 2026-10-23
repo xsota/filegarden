@@ -21,11 +21,20 @@ pub struct TreeView {
     pub follow: bool,
     last_scroll: f64,
     height: usize,
+    /// Where the rows were drawn last frame.
+    pub area: Rect,
 }
 
 impl Default for TreeView {
     fn default() -> Self {
-        TreeView { selected: None, offset: 0, follow: true, last_scroll: f64::NEG_INFINITY, height: 10 }
+        TreeView {
+            selected: None,
+            offset: 0,
+            follow: true,
+            last_scroll: f64::NEG_INFINITY,
+            height: 10,
+            area: Rect::default(),
+        }
     }
 }
 
@@ -160,6 +169,7 @@ pub fn render(
     let focus = state.focus;
     let tree = &mut state.tree;
     view.height = area.height as usize;
+    view.area = area;
     let rows = tree.rows(active_only).to_vec();
     view.update_scroll(&rows, focus, now);
 
